@@ -1,7 +1,7 @@
 app.service('ankamaService', function ($rootScope, $http, $q) {
     const self = this;
 
-    const baseUrl = "https://magipack.herokuapp.com/ankama";
+    const baseUrl = "http://magipack.herokuapp.com/ankama";
 
     this.getImgB64Async = (imgUrl) => {
 
