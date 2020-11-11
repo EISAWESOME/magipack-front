@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8' />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta http-equiv="Cache-control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles/styles.css">
+    <link rel="stylesheet" href="styles/scrollbars.css">
+
+    <link rel="stylesheet" href="/node_modules/angular-material/angular-material.css">
+
+    <!-- Libs -->
+    <script src="/node_modules/angular/angular.js"></script>
+
+    <script src="/node_modules/angular-aria/angular-aria.js"></script>
+    <script src="/node_modules/angular-animate/angular-animate.js"></script>
+    <script src="/node_modules/angular-messages/angular-messages.js"></script>
+    <script src="/node_modules/angular-material/angular-material.js"></script>
+
+
+    <script src="js/app.js"></script>
+
+    <!-- Controllers -->
+
+    <script src="js/controllers/appController.js"></script>
+
+    <!-- Services -->
+
+    <script src="js/services/dofapiService.js"></script>
+    <script src="js/services/ankamaService.js"></script>
+
+    <!-- Core -->
+
+    <script src="js/core/JobsToItemTypes.js"></script>
+    <script src="js/core/utils.js"></script>
+
+
+    <title>Pack Magic</title>
+</head>
+
+<body ng-app="app" ng-controller="AppController" ng-init="init()" layout-fill>
+
+    <md-content class="app-view" layout-fill layout="row" layout-align="center stretch">
+
+        <div class="main-card" layout="column">
+
+            <div layout="column" layout-align="center center">
+
+                <img src="/img/eis-le-logo.png">
+                <div class="title">
+                    Trouves les meilleurs objets pour monter tes metiers de mage !
+                </div>
+            </div>
+
+            <div>
+                <form name="form">
+
+                    <div layout="column">
+
+                        <md-input-container>
+                            <label>Selectionne le metier à monter</label>
+
+                            <md-select ng-model="model.chosenTypes" required>
+
+                                <md-optgroup label="Equipements">
+                                    <md-option ng-value="JobsToItemTypes.JOAILLO">Joaillomage</md-option>
+                                    <md-option ng-value="JobsToItemTypes.CORDO">Cordomage</md-option>
+                                    <md-option ng-value="JobsToItemTypes.COSTU">Costumage</md-option>
+                                </md-optgroup>
+
+                                <md-optgroup label="Armes">
+                                    <md-option ng-value="JobsToItemTypes.FORGE">Forgemage</md-option>
+                                    <md-option ng-value="JobsToItemTypes.SCULPT">Sculptemage</md-option>
+                                </md-optgroup>
+
+
+
+                            </md-select>
+                        </md-input-container>
+
+                        <md-input-container>
+                            <label>
+                                Niveaux entre les objets
+                            </label>
+                            <md-select ng-model="model.levelBetweenItems" required>
+                                <md-option ng-value="3">3</md-option>
+                                <md-option ng-value="5">5</md-option>
+                                <md-option ng-value="10">10</md-option>
+                            </md-select>
+                        </md-input-container>
+
+                        <div>
+                            <div>Stats interessantes</div>
+                            <div class="subtitle">Plus la rune est lourde, plus le passage fera XP ! Les runes les plus
+                                interessantes sont celles avec un ratio poids/prix élevé</div>
+                            <div class="checkbox-container" layout="row" layout-wrap>
+                                <md-checkbox ng-model="model.stats.so">Soin</md-checkbox>
+                                <md-checkbox ng-model="model.stats.sa">Sagesse</md-checkbox>
+                                <md-checkbox ng-model="model.stats.prosp">Prospection</md-checkbox>
+                                <md-checkbox ng-model="model.stats.do">Dommages</md-checkbox>
+                                <md-checkbox ng-model="model.stats.vi">Vitalité</md-checkbox>
+                                <md-checkbox ng-model="model.stats.elem">Force/Intel/Agi/Chance</md-checkbox>
+                                <md-checkbox ng-model="model.stats.pa">PA</md-checkbox>
+                                <md-checkbox ng-model="model.stats.po">PO</md-checkbox>
+                                <md-checkbox ng-model="model.stats.pm">PM</md-checkbox>
+                                <md-checkbox ng-model="model.stats.invo">Invo</md-checkbox>
+
+                            </div>
+                        </div>
+
+                        <div layout="row" layout-align="center center">
+                            <md-button class="button search" ng-show="form.$valid" ng-click="findItems()">
+                                Va chercher
+                            </md-button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="result-container" layout-fill flex>
+                <div ng-repeat="r in model.result" class="result-entry">
+
+                    <div class="result-level-range title">
+                        {{r.level}}
+                    </div>
+
+                    <div class="items-container" layout="column" layout-align="center start">
+
+                        <div ng-repeat="i in r.items | orderBy:'-score' track by $index" ng-init="id = makeId()"
+                            layout="row" layout-align="start center" class="item"
+                            ng-class="{'hidden-by-default' : $index > 2, 'toggled' : r.toggled}">
+
+                            <div class="top title"
+                                ng-class="{'one' : $index === 0, 'two' : $index === 1, 'three' : $index === 2,}">
+                                #{{$index +1}}
+                            </div>
+                            <div class="img-container">
+                                <img ng-init="b64 = getImgB64(i.imgUrl, id)" id="img{{id}}">
+                            </div>
+
+                            <div class="item-infos" layout="column">
+                                <div class="item-name">
+                                    {{i.name}}
+                                </div>
+                                <div class="item-score">
+                                    {{i.score}}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div ng-show="!r.items || (r.items && r.items.length === 0)" class="no-items">
+                            Aucun items dans cette tranche pour ces filtres.
+                        </div>
+
+                        <md-button class="button" ng-show="r.items.length > 3" ng-click="r.toggled = !r.toggled">
+                            Voir {{r.toggled ? "moins" : "plus"}}
+                        </md-button>
+
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+
+
+    </md-content>
+
+</body>
+
+</html>
