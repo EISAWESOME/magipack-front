@@ -22,6 +22,5 @@ app.service('dofapiService', function ($rootScope, $http, $q) {
         })
 
         return getEquip.promise;
-
     };
 })
