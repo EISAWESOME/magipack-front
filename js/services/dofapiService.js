@@ -1,7 +1,7 @@
 app.service('dofapiService', function ($rootScope, $http, $q) {
     const self = this;
 
-    const baseUrl = "http://magipack.herokuapp.com/dofapi";
+    const baseUrl = "https://magipack.herokuapp.com/dofapi";
 
     this.getEquipAsync = (types) => {
 
