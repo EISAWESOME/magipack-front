@@ -3,6 +3,7 @@ body {
   overflow: overlay;
   height: unset !important;
   min-height: 100%;
+  overflow-x: hidden;
 }
 .app-view {
   background-color: #23272a;
@@ -80,7 +81,7 @@ body {
   font-size: 1.2em;
 }
 .app-view .copyright {
-  position: absolute;
+  position: fixed;
   bottom: 20px;
   right: 10px;
   font-size: 0.6em;
