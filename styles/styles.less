@@ -1,10 +1,16 @@
+html, body {
+    overflow: overlay;
+    height: unset !important;
+    min-height : 100%;
+}
+
 .app-view {
-    overflow: hidden;
     background-color: #23272a;
     color: #FFF;
     font-size: 18px;
 
     .main-card {
+        min-height: calc(100vh - 40px);
         background-color: #2c2f33;
 
         width: 50vw;
@@ -27,7 +33,6 @@
         }
 
         .result-container {
-            overflow: auto;
 
             .result-entry {
 
@@ -97,6 +102,14 @@
                 }
             }
         }
+    }
+
+    .copyright {
+        position : absolute;
+        bottom: 20px;
+        right: 10px;
+        font-size: 0.6em;
+        color: grey;
     }
 
 
