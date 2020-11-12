@@ -4,12 +4,16 @@ app.controller('AppController', function ($rootScope, $scope, dofapiService, ank
 
     $scope.init = () => {
 
+        $scope.loading = false;
+        $scope.advancedOptions = false;
+        $scope.isScrolledDown = false;
 
-        // TODO : A integrer
+
         $scope.model = {
 
             chosenTypes: [],
             levelBetweenItems: 5, // Possible value 3, 5, 10  
+            startingLevel : 1,
             stats: {
                 so: true,
                 sa: true,
@@ -30,7 +34,10 @@ app.controller('AppController', function ($rootScope, $scope, dofapiService, ank
 
     $scope.findItems = () => {
 
-        dofapiService.getEquipAsync($scope.model.chosenTypes).then((equip) => {
+        $scope.loading = true;
+
+
+        dofapiService.getEquipAsync($scope.model.chosenTypes, $scope.model.startingLevel).then((equip) => {
 
             // 1 - Donne un score a chaque item par rapport à ses stats interessante
             let weightedEquip = equip.map((e) => {
@@ -98,7 +105,7 @@ app.controller('AppController', function ($rootScope, $scope, dofapiService, ank
                     }
 
                     if (soinStat || sagesseStat || prospecStat || dommageStat ||
-                        forceStat || agiStat || chanceStat || intelStat ||
+                        forceStat || agiStat || chanceStat || intelStat || vitaStat ||
                         paStat || pmStat || poStat || invoStat) {
 
                         if (soinStat) {
@@ -112,6 +119,10 @@ app.controller('AppController', function ($rootScope, $scope, dofapiService, ank
                         }
                         if (dommageStat) {
                             e.score += Math.max(dommageStat["Dommages"].min, dommageStat["Dommages"].max) * 10;
+                        }
+
+                        if(vitaStat) {
+                            e.score += Math.max(vitaStat["Vitalité"].min, vitaStat["Vitalité"].max);
                         }
 
 
@@ -160,7 +171,7 @@ app.controller('AppController', function ($rootScope, $scope, dofapiService, ank
 
             let itemsPerLevels = [];
 
-            let cur = 0
+            let cur = $scope.model.startingLevel - 1 || 0;
             while (cur < 199) {
 
                 let lower = cur + 1;
@@ -180,13 +191,28 @@ app.controller('AppController', function ($rootScope, $scope, dofapiService, ank
 
             $scope.model.result = itemsPerLevels;
 
-            console.log(itemsPerLevels);
+            //console.log(itemsPerLevels);
+            $scope.advancedOptions = false;
+            $scope.loading = false;
 
+
+
+            // 4 - Scroll jusqu'aux resultats
+
+            let resultContainer = document.querySelector(".result-container");
+            if(resultContainer) {
+                let offset = resultContainer.offsetTop;
+                setTimeout(() => {
+                    window.scrollTo({top: offset, behavior: 'smooth'});
+
+                }, 100);
+            }
 
 
 
 
         }, (err) => {
+            $scope.loading = false;
             console.error(err);
         })
 
@@ -199,11 +225,36 @@ app.controller('AppController', function ($rootScope, $scope, dofapiService, ank
     };
 
     $scope.getImgB64 = (imgUrl, id) => {
-        ankamaService.getImgB64Async(imgUrl).then((res) => {
-            //console.log(res.result)
 
-            document.querySelector("#img" + id).src = res.result;
-        })
+        $scope.$evalAsync(() => {
+            let img = document.querySelector("#img" + id);
+
+            if(img) {
+                ankamaService.getImgB64Async(imgUrl).then((res) => {
+                    //console.log(res.result)
+        
+                    img.src = res.result;
+                });
+            }
+        });
     };
+
+
+    window.onscroll = (ev) => {
+        let ret = window.scrollY > 200;
+        if($scope.isScrolledDown != ret) {
+            $scope.$evalAsync(() => {
+                $scope.isScrolledDown = ret;
+
+            });
+        }
+        
+    };
+
+    $scope.backToTop = () => {
+        window.scrollTo({top: 0, behavior: 'smooth'});
+    };
+
+
 
 });

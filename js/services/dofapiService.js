@@ -1,14 +1,20 @@
 app.service('dofapiService', function ($rootScope, $http, $q) {
     const self = this;
 
-    const baseUrl = "https://magipack.herokuapp.com/dofapi";
+    // PROD
+    //const baseUrl = "https://magipack.herokuapp.com/dofapi";
 
-    this.getEquipAsync = (types) => {
+    // DEV 
+    const baseUrl = "http://localhost:3000/dofapi";
+
+
+    this.getEquipAsync = (types, startingLevel) => {
 
         const getEquip = $q.defer();
 
         $http.post(baseUrl + "/equip", {
-            Types : types
+            Types : types,
+            StartingLevel : startingLevel || 0,
         }).then((res) => {
 
             if(res && res.data) {

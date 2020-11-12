@@ -93,33 +93,68 @@
                             </md-select>
                         </md-input-container>
 
-                        <div>
-                            <div>Stats intéressantes</div>
-                            <div class="subtitle">Plus la rune est lourde, plus le passage fera XP ! Les runes les plus
-                                interessantes sont celles avec un ratio poids/prix élevé</div>
-                            <div class="checkbox-container" layout="row" layout-wrap>
-                                <md-checkbox ng-model="model.stats.so">Soin</md-checkbox>
-                                <md-checkbox ng-model="model.stats.sa">Sagesse</md-checkbox>
-                                <md-checkbox ng-model="model.stats.prosp">Prospection</md-checkbox>
-                                <md-checkbox ng-model="model.stats.do">Dommages</md-checkbox>
-                                <md-checkbox ng-model="model.stats.vi">Vitalité</md-checkbox>
-                                <md-checkbox ng-model="model.stats.elem">Force/Intel/Agi/Chance</md-checkbox>
-                                <md-checkbox ng-model="model.stats.pa">PA</md-checkbox>
-                                <md-checkbox ng-model="model.stats.po">PO</md-checkbox>
-                                <md-checkbox ng-model="model.stats.pm">PM</md-checkbox>
-                                <md-checkbox ng-model="model.stats.invo">Invo</md-checkbox>
+                        <div class="advanced-settings">
+                            <md-button class="toggle-button" layout="column" layout-align="center center"
+                                ng-click="advancedOptions = !advancedOptions">
+                                <div>
+                                    {{advancedOptions ? "Moins" : "Plus"}} d'options
+                                </div>
+
+                                <md-icon ng-class="{'toggled' : advancedOptions}"
+                                    md-svg-src="/img/icons/down-chevron.svg"></md-icon>
+
+                            </md-button>
+
+                            <div ng-show="advancedOptions">
+
+                                <div>
+                                    <div>Niveau de depart</div>
+                                    <div class="subtitle">Renseigne un niveau de depart pour n'afficher que les items
+                                        pertinent pour toi.</div>
+
+                                    <md-input-container>
+                                        <input ng-required="false" type="number" ng-model="model.startingLevel" step="1" min="1" max="199">
+                                    </md-input-container>
+                                </div>
+
+                                <div>
+                                    <div>Stats intéressantes</div>
+                                    <div class="subtitle">Plus la rune est lourde, plus le passage fera XP ! Les runes
+                                        les plus
+                                        interessantes sont celles avec un ratio poids/prix élevé</div>
+                                    <div class="checkbox-container" layout="row" layout-wrap>
+                                        <md-checkbox ng-model="model.stats.so">Soin</md-checkbox>
+                                        <md-checkbox ng-model="model.stats.sa">Sagesse</md-checkbox>
+                                        <md-checkbox ng-model="model.stats.prosp">Prospection</md-checkbox>
+                                        <md-checkbox ng-model="model.stats.do">Dommages</md-checkbox>
+                                        <md-checkbox ng-model="model.stats.vi">Vitalité</md-checkbox>
+                                        <md-checkbox ng-model="model.stats.elem">Force/Intel/Agi/Chance</md-checkbox>
+                                        <md-checkbox ng-model="model.stats.pa">PA</md-checkbox>
+                                        <md-checkbox ng-model="model.stats.po">PO</md-checkbox>
+                                        <md-checkbox ng-model="model.stats.pm">PM</md-checkbox>
+                                        <md-checkbox ng-model="model.stats.invo">Invo</md-checkbox>
+                                    </div>
+                                </div>
 
                             </div>
+
                         </div>
+
+
 
                         <div layout="row" layout-align="center center">
                             <md-button class="button search" ng-show="form.$valid" ng-click="findItems()">
                                 Va chercher
+                                <div class="loader" ng-show="loading">
+                                    <md-icon md-svg-src="/img/icons/loading.svg"></md-icon>
+
+                                </div>
                             </md-button>
                         </div>
                     </div>
                 </form>
             </div>
+
             <div class="result-container" layout-fill flex>
                 <div ng-repeat="r in model.result" class="result-entry">
 
@@ -129,31 +164,38 @@
 
                     <div class="items-container" layout="column" layout-align="center start">
 
-                        <div ng-repeat="i in r.items | orderBy:'-score' track by $index" ng-init="id = makeId()"
-                            layout="row" layout-align="start center" class="item"
-                            ng-class="{'hidden-by-default' : $index > 2, 'toggled' : r.toggled}">
+                        <div layout="row" layout-align="start center" layout-fill layout-wrap>
+                            <div ng-repeat="i in r.items | orderBy:'-score' track by $index" ng-init="id = makeId()"
+                                layout="row" layout-align="start center" class="item"
+                                ng-class="{'hidden-by-default' : $index > 2, 'toggled' : r.toggled}" flex="33">
 
-                            <div class="top title"
-                                ng-class="{'one' : $index === 0, 'two' : $index === 1, 'three' : $index === 2,}">
-                                #{{$index +1}}
-                            </div>
-                            <div class="img-container">
-                                <img ng-init="b64 = getImgB64(i.imgUrl, id)" id="img{{id}}">
+                                <div class="top title"
+                                    ng-class="{'one' : $index === 0, 'two' : $index === 1, 'three' : $index === 2,}">
+                                    #{{$index +1}}
+                                </div>
+                                <div class="img-container">
+                                    <img id="img{{id}}" ng-init="b64 = getImgB64(i.imgUrl, id)">
+                                </div>
+
+                                <div class="item-infos" layout="column">
+                                    <div class="item-name">
+                                        {{i.name}}
+                                    </div>
+                                    <div class="item-level">
+                                        lvl {{i.level}}
+                                    </div>
+                                    <div class="item-score">
+                                        {{i.score}}
+                                    </div>
+                                </div>
                             </div>
 
-                            <div class="item-infos" layout="column">
-                                <div class="item-name">
-                                    {{i.name}}
-                                </div>
-                                <div class="item-score">
-                                    {{i.score}}
-                                </div>
+                            <div ng-show="!r.items || (r.items && r.items.length === 0)" class="no-items">
+                                Aucun items dans cette tranche pour ces filtres.
                             </div>
                         </div>
 
-                        <div ng-show="!r.items || (r.items && r.items.length === 0)" class="no-items">
-                            Aucun items dans cette tranche pour ces filtres.
-                        </div>
+
 
                         <md-button class="button" ng-show="r.items.length > 3" ng-click="r.toggled = !r.toggled">
                             Voir {{r.toggled ? "moins" : "plus"}}
@@ -164,6 +206,10 @@
                 </div>
 
             </div>
+        </div>
+
+        <div class="scroll-top" ng-show="isScrolledDown" ng-click="backToTop()" layout="row">
+            <md-icon md-svg-src="/img/icons/down-chevron.svg"></md-icon>
         </div>
 
         <div class="copyright" layout="column" layout-align="center end">

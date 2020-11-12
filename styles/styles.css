@@ -8,7 +8,7 @@ body {
 .app-view {
   background-color: #23272a;
   color: #FFF;
-  font-size: 18px;
+  font-size: 14px;
 }
 .app-view .main-card {
   min-height: calc(100vh - 40px);
@@ -26,19 +26,39 @@ body {
   font-size: 0.8em;
   color: #bbbbbb;
 }
+.app-view .main-card .advanced-settings .toggle-button {
+  margin: 1em 0 !important;
+  padding: 0;
+  width: 100%;
+  margin: 0.5em;
+}
+.app-view .main-card .advanced-settings .toggle-button md-icon {
+  transition: 0.1s linear;
+}
+.app-view .main-card .advanced-settings .toggle-button md-icon.toggled {
+  -webkit-transform: rotate(180deg);
+  -moz-transform: rotate(180deg);
+  -ms-transform: rotate(180deg);
+  -o-transform: rotate(180deg);
+  transform: rotate(180deg);
+}
+.app-view .main-card .advanced-settings .toggle-button md-icon svg {
+  fill: #fff;
+}
 .app-view .main-card .checkbox-container {
   margin: 10px 0;
 }
 .app-view .main-card .result-container .result-entry {
-  margin: 25px 0;
+  padding: 10px 0;
+  border-bottom: 2px solid #23272a;
 }
 .app-view .main-card .result-container .result-entry .result-level-range {
-  font-size: 2em;
+  font-size: 1.7em;
   font-weight: bolder;
   margin: 10px 0;
 }
 .app-view .main-card .result-container .result-entry .items-container .item {
-  margin-left: 50px;
+  padding-left: 3em;
 }
 .app-view .main-card .result-container .result-entry .items-container .item.hidden-by-default {
   display: none;
@@ -67,24 +87,47 @@ body {
   margin: 0 10px;
 }
 .app-view .main-card .result-container .result-entry .items-container .item .img-container img {
-  width: 100px;
-  height: 100px;
+  width: 75px;
+  height: 75px;
 }
-.app-view .main-card .result-container .result-entry .items-container .item .item-name {
+.app-view .main-card .result-container .result-entry .items-container .item .item-infos {
+  line-height: 1.5em;
+}
+.app-view .main-card .result-container .result-entry .items-container .item .item-infos .item-name {
   font-weight: bold;
 }
-.app-view .main-card .result-container .result-entry .items-container .item .item-score {
+.app-view .main-card .result-container .result-entry .items-container .item .item-infos .item-score {
   color: red;
 }
 .app-view .main-card .result-container .result-entry .items-container .no-items {
   color: grey;
   font-size: 1.2em;
 }
+.app-view .scroll-top {
+  position: fixed;
+  bottom: 65px;
+  right: 40px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  cursor: pointer;
+  background-color: #141618;
+}
+.app-view .scroll-top md-icon {
+  -webkit-transform: rotate(180deg);
+  -moz-transform: rotate(180deg);
+  -ms-transform: rotate(180deg);
+  -o-transform: rotate(180deg);
+  transform: rotate(180deg);
+}
+.app-view .scroll-top md-icon svg {
+  fill: #FFF;
+}
 .app-view .copyright {
   position: fixed;
   bottom: 20px;
   right: 10px;
-  font-size: 0.6em;
+  font-size: 12px;
   color: grey;
 }
 .app-view .button {
@@ -94,11 +137,28 @@ body {
   border-radius: 7px;
 }
 .app-view .button.search {
+  position: relative;
   width: 200px;
+}
+.app-view .button.search .loader {
+  position: absolute;
+  right: 15px;
+  bottom: 0;
+}
+.app-view .button.search .loader md-icon {
+  width: 20px;
+  height: 20px;
+  min-width: unset;
+  max-width: unset;
+  animation-name: spin;
+  animation-duration: 1000ms;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
 }
 .app-view .button:hover {
   background-color: #afbcea;
 }
+/* #region  Overrides */
 md-checkbox.md-default-theme.md-checked .md-ink-ripple,
 md-checkbox.md-checked .md-ink-ripple {
   color: #7289da;
@@ -152,8 +212,28 @@ md-select-menu.md-default-theme md-content md-optgroup,
 md-select-menu md-content md-optgroup {
   color: #99aab5;
 }
+md-input-container.md-default-theme .md-input,
+md-input-container .md-input {
+  color: #FFF;
+  border-color: #FFF;
+}
+md-input-container.md-default-theme:not(.md-input-invalid).md-input-focused .md-input,
+md-input-container:not(.md-input-invalid).md-input-focused .md-input,
+md-input-container.md-default-theme:not(.md-input-invalid).md-input-resized .md-input,
+md-input-container:not(.md-input-invalid).md-input-resized .md-input {
+  border-color: #7289da;
+}
 @media (min-width: 1920px) {
   .layout-row:not(.layout-gt-xs-column):not(.layout-gt-sm-column):not(.layout-gt-md-column):not(.layout-gt-lg-column):not(.layout-xl-column) > .md-auto-horizontal-margin:not(:first-child) {
     margin-left: unset !important;
+  }
+}
+/* #endregion */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
   }
 }
