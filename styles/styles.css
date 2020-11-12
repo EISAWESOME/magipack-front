@@ -13,7 +13,6 @@ body {
 .app-view .main-card {
   min-height: calc(100vh - 40px);
   background-color: #2c2f33;
-  width: 50vw;
   margin: 20px;
   padding: 20px;
   border-radius: 15px;
@@ -58,6 +57,7 @@ body {
   margin: 10px 0;
 }
 .app-view .main-card .result-container .result-entry .items-container .item {
+  min-width: 270px;
   padding-left: 3em;
 }
 .app-view .main-card .result-container .result-entry .items-container .item.hidden-by-default {
