@@ -1,4 +1,4 @@
-app.controller('AppController', function ($rootScope, $scope, dofapiService, ankamaService) {
+app.controller('AppController', function ($rootScope, $scope, $mdDialog, dofapiService, ankamaService) {
 
     $scope.JobsToItemTypes = JobsToItemTypes;
 
@@ -13,12 +13,14 @@ app.controller('AppController', function ($rootScope, $scope, dofapiService, ank
 
             chosenTypes: [],
             levelBetweenItems: 5, // Possible value 3, 5, 10  
-            startingLevel : 1,
+            startingLevel: 1,
             stats: {
                 so: true,
                 sa: true,
                 prosp: true,
                 do: true,
+
+                doPou: true,
 
                 vi: false,
                 elem: false,
@@ -32,10 +34,25 @@ app.controller('AppController', function ($rootScope, $scope, dofapiService, ank
         }
     };
 
+    $scope.openFaq = (ev) => {
+        $mdDialog.show({
+            templateUrl: 'views/faqDialog.html',
+            // Appending dialog to document.body to cover sidenav in docs app
+            // Modal dialogs should fully cover application to prevent interaction outside of dialog
+            parent: angular.element(document.body),
+            targetEvent: ev,
+            clickOutsideToClose: true,
+            fullscreen: false // Only for -xs, -sm breakpoints.
+        }).then((answer) => {
+            $scope.status = 'You said the information was "' + answer + '".';
+        }, () => {
+            $scope.status = 'You cancelled the dialog.';
+        });
+    };
+
     $scope.findItems = () => {
 
         $scope.loading = true;
-
 
         dofapiService.getEquipAsync($scope.model.chosenTypes, $scope.model.startingLevel).then((equip) => {
 
@@ -51,6 +68,7 @@ app.controller('AppController', function ($rootScope, $scope, dofapiService, ank
                     let sagesseStat;
                     let prospecStat;
                     let dommageStat;
+                    let dopouStat;
                     let vitaStat;
                     let forceStat;
                     let agiStat;
@@ -76,6 +94,12 @@ app.controller('AppController', function ($rootScope, $scope, dofapiService, ank
                     if ($scope.model.stats.do) {
                         dommageStat = stats.find(s => s.hasOwnProperty("Dommages"));
                     }
+
+                    if ($scope.model.stats.dopou) {
+                        dopouStat = stats.find(s => s.hasOwnProperty("Dommages Poussée"));
+                    }
+
+
 
                     if ($scope.model.stats.vi) {
                         vitaStat = stats.find(s => s.hasOwnProperty("Vitalité"));
@@ -104,9 +128,13 @@ app.controller('AppController', function ($rootScope, $scope, dofapiService, ank
                         invoStat = stats.find(s => s.hasOwnProperty("Invocation"));
                     }
 
-                    if (soinStat || sagesseStat || prospecStat || dommageStat ||
+                    if (soinStat || sagesseStat || prospecStat || dommageStat || dopouStat ||
                         forceStat || agiStat || chanceStat || intelStat || vitaStat ||
                         paStat || pmStat || poStat || invoStat) {
+
+                        let coef = 1 + ((!!soinStat + !!sagesseStat + !!prospecStat + !!dommageStat + !!dopouStat +
+                            !!forceStat + !!agiStat + !!chanceStat + !!intelStat + !!vitaStat +
+                            !!paStat + !!pmStat + !!poStat + !!invoStat) * 0.5);
 
                         if (soinStat) {
                             e.score += Math.max(soinStat["Soins"].min, soinStat["Soins"].max) * 10;
@@ -121,40 +149,49 @@ app.controller('AppController', function ($rootScope, $scope, dofapiService, ank
                             e.score += Math.max(dommageStat["Dommages"].min, dommageStat["Dommages"].max) * 10;
                         }
 
-                        if(vitaStat) {
+                        if (vitaStat) {
                             e.score += Math.max(vitaStat["Vitalité"].min, vitaStat["Vitalité"].max);
+                        }
+
+                        if (dopouStat) {
+                            e.score += Math.max(dopouStat["Dommages Poussée"].min, dopouStat["Dommages Poussée"].max) * 5;
                         }
 
 
                         if (forceStat || agiStat || chanceStat || intelStat) {
-                            if(forceStat) {
+                            if (forceStat) {
                                 e.score += Math.max(forceStat["Force"].min, forceStat["Force"].max);
                             }
 
-                            if(agiStat) {
+                            if (agiStat) {
                                 e.score += Math.max(agiStat["Agilité"].min, agiStat["Agilité"].max);
                             }
 
-                            if(chanceStat) {
+                            if (chanceStat) {
                                 e.score += Math.max(chanceStat["Chance"].min, chanceStat["Chance"].max);
                             }
 
-                            if(intelStat) {
+                            if (intelStat) {
                                 e.score += Math.max(intelStat["Intelligence"].min, intelStat["Intelligence"].max);
                             }
                         }
 
-                        if(paStat) {
+                        if (paStat) {
                             e.score += Math.max(paStat["PA"].min, paStat["PA"].max) * 100;
                         }
-                        if(pmStat) {
+                        if (pmStat) {
                             e.score += Math.max(pmStat["PM"].min, pmStat["PM"].max) * 90;
                         }
-                        if(poStat) {
+                        if (poStat) {
                             e.score += Math.max(poStat["PO"].min, poStat["PO"].max) * 51;
                         }
-                        if(invoStat) {
+                        if (invoStat) {
                             e.score += Math.max(paStat["Invocation"].min, paStat["Invocation"].max) * 30;
+                        }
+
+                        if (coef) {
+
+                            e.score *= coef;
                         }
                     }
                 }
@@ -200,10 +237,13 @@ app.controller('AppController', function ($rootScope, $scope, dofapiService, ank
             // 4 - Scroll jusqu'aux resultats
 
             let resultContainer = document.querySelector(".result-container");
-            if(resultContainer) {
+            if (resultContainer) {
                 let offset = resultContainer.offsetTop;
                 setTimeout(() => {
-                    window.scrollTo({top: offset, behavior: 'smooth'});
+                    window.scrollTo({
+                        top: offset,
+                        behavior: 'smooth'
+                    });
 
                 }, 100);
             }
@@ -229,10 +269,10 @@ app.controller('AppController', function ($rootScope, $scope, dofapiService, ank
         $scope.$evalAsync(() => {
             let img = document.querySelector("#img" + id);
 
-            if(img) {
+            if (img) {
                 ankamaService.getImgB64Async(imgUrl).then((res) => {
                     //console.log(res.result)
-        
+
                     img.src = res.result;
                 });
             }
@@ -242,17 +282,20 @@ app.controller('AppController', function ($rootScope, $scope, dofapiService, ank
 
     window.onscroll = (ev) => {
         let ret = window.scrollY > 200;
-        if($scope.isScrolledDown != ret) {
+        if ($scope.isScrolledDown != ret) {
             $scope.$evalAsync(() => {
                 $scope.isScrolledDown = ret;
 
             });
         }
-        
+
     };
 
     $scope.backToTop = () => {
-        window.scrollTo({top: 0, behavior: 'smooth'});
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
     };
 
 

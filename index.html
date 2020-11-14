@@ -54,12 +54,15 @@
                 <div class="title">
                     Trouve les meilleurs objets pour monter tes metiers de mage !
                 </div>
+
+                <a class="faq" ng-click="openFaq()">A quoi ça sert ? Comment ça marche ?</a>
             </div>
 
             <div>
                 <form name="form">
 
                     <div layout="column">
+                        
 
                         <md-input-container>
                             <label>Sélectionne le metier à monter</label>
@@ -87,9 +90,9 @@
                                 Niveaux entre les objets
                             </label>
                             <md-select ng-model="model.levelBetweenItems" required>
-                                <md-option ng-value="3">3</md-option>
-                                <md-option ng-value="5">5</md-option>
-                                <md-option ng-value="10">10</md-option>
+                                <md-option ng-value="3">3 - Gros budget, plus rapide</md-option>
+                                <md-option ng-value="5">5 - Recommandé</md-option>
+                                <md-option ng-value="10">10 - Petit budget, plus lent</md-option>
                             </md-select>
                         </md-input-container>
 
@@ -127,6 +130,8 @@
                                         <md-checkbox ng-model="model.stats.sa">Sagesse</md-checkbox>
                                         <md-checkbox ng-model="model.stats.prosp">Prospection</md-checkbox>
                                         <md-checkbox ng-model="model.stats.do">Dommages</md-checkbox>
+                                        <md-checkbox ng-model="model.stats.dopou">Do Pou</md-checkbox>
+
                                         <md-checkbox ng-model="model.stats.vi">Vitalité</md-checkbox>
                                         <md-checkbox ng-model="model.stats.elem">Force/Intel/Agi/Chance</md-checkbox>
                                         <md-checkbox ng-model="model.stats.pa">PA</md-checkbox>
@@ -143,8 +148,8 @@
 
 
                         <div layout="row" layout-align="center center">
-                            <md-button class="button search" ng-show="form.$valid" ng-click="findItems()">
-                                Va chercher
+                            <md-button class="button search" ng-disabled="!form.$valid" ng-click="findItems()">
+                                {{form.$valid ? "Va chercher" : "Selectionne un metier"}}
                                 <div class="loader" ng-show="loading">
                                     <md-icon md-svg-src="/img/icons/loading.svg"></md-icon>
 
@@ -184,8 +189,8 @@
                                     <div class="item-level">
                                         lvl {{i.level}}
                                     </div>
-                                    <div class="item-score">
-                                        {{i.score}}
+                                    <div class="item-score" title="Poids total de runes interessantes x1.5 par lignes">
+                                        Score : <span class="value">{{i.score | number : 0}}</span>
                                     </div>
                                 </div>
                             </div>
@@ -202,9 +207,7 @@
                         </md-button>
 
                     </div>
-
                 </div>
-
             </div>
         </div>
 
