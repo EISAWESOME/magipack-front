@@ -189,8 +189,11 @@
                                     <div class="item-level">
                                         lvl {{i.level}}
                                     </div>
-                                    <div class="item-score" ng-attr-title="{{displayScoreDetails(i.scoreDetails, i.coef)}}">
-                                        Score : <span class="value">{{i.score | number : 0}}</span>
+                                    <div class="item-score" ng-attr-title="{{displayScoreDetails(i.scoreDetails, i.coef)}}" layout="row" layout-align="start center">
+                                        <div>
+                                            Score : <span class="value">{{i.score | number : 0}}</span> 
+                                        </div>
+                                        <md-icon layout="column" layout-align="center start" md-svg-src="/img/icons/qmark.svg"></md-icon>
                                     </div>
                                 </div>
                             </div>

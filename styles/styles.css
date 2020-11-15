@@ -111,6 +111,14 @@ body {
   font-weight: bold;
   color: #ff6666;
 }
+.app-view .main-card .result-container .result-entry .items-container .item .item-infos .item-score md-icon {
+  margin: 0 0 0 10px;
+}
+.app-view .main-card .result-container .result-entry .items-container .item .item-infos .item-score md-icon svg {
+  width: 15px;
+  height: 15px;
+  fill: #5f5f5f;
+}
 .app-view .main-card .result-container .result-entry .items-container .no-items {
   margin-top: 10px;
   margin-bottom: 20px;
