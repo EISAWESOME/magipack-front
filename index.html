@@ -189,7 +189,7 @@
                                     <div class="item-level">
                                         lvl {{i.level}}
                                     </div>
-                                    <div class="item-score" title="Poids total de runes interessantes x1.5 par lignes">
+                                    <div class="item-score" ng-attr-title="{{displayScoreDetails(i.scoreDetails, i.coef)}}">
                                         Score : <span class="value">{{i.score | number : 0}}</span>
                                     </div>
                                 </div>

@@ -64,6 +64,7 @@ app.controller('AppController', function ($rootScope, $scope, $mdDialog, dofapiS
 
                 if (e.statistics) {
                     let stats = e.statistics;
+
                     let soinStat;
                     let sagesseStat;
                     let prospecStat;
@@ -74,10 +75,25 @@ app.controller('AppController', function ($rootScope, $scope, $mdDialog, dofapiS
                     let agiStat;
                     let chanceStat;
                     let intelStat;
-                    let paStat
-                    let pmStat
-                    let poStat
-                    let invoStat
+                    let paStat;
+                    let pmStat;
+                    let poStat;
+                    let invoStat;
+
+                    let soinStatValue;
+                    let sagesseStatValue;
+                    let prospecStatValue;
+                    let dommageStatValue;
+                    let dopouStatValue;
+                    let vitaStatValue;
+                    let forceStatValue;
+                    let agiStatValue;
+                    let chanceStatValue;
+                    let intelStatValue;
+                    let paStatValue;
+                    let pmStatValue;
+                    let poStatValue;
+                    let invoStatValue;
 
                     if ($scope.model.stats.so) {
                         soinStat = stats.find(s => s.hasOwnProperty("Soins"));
@@ -132,66 +148,62 @@ app.controller('AppController', function ($rootScope, $scope, $mdDialog, dofapiS
                         forceStat || agiStat || chanceStat || intelStat || vitaStat ||
                         paStat || pmStat || poStat || invoStat) {
 
-                        let coef = 1 + ((!!soinStat + !!sagesseStat + !!prospecStat + !!dommageStat + !!dopouStat +
-                            !!forceStat + !!agiStat + !!chanceStat + !!intelStat + !!vitaStat +
-                            !!paStat + !!pmStat + !!poStat + !!invoStat) * 0.5);
-
-                        if (soinStat) {
-                            e.score += Math.max(soinStat["Soins"].min, soinStat["Soins"].max) * 10;
-                        }
-                        if (sagesseStat) {
-                            e.score += Math.max(sagesseStat["Sagesse"].min, sagesseStat["Sagesse"].max) * 3;
-                        }
-                        if (prospecStat) {
-                            e.score += Math.max(prospecStat["Prospection"].min, prospecStat["Prospection"].max) * 3;
-                        }
-                        if (dommageStat) {
-                            e.score += Math.max(dommageStat["Dommages"].min, dommageStat["Dommages"].max) * 10;
-                        }
-
-                        if (vitaStat) {
-                            e.score += Math.max(vitaStat["Vitalité"].min, vitaStat["Vitalité"].max);
-                        }
-
-                        if (dopouStat) {
-                            e.score += Math.max(dopouStat["Dommages Poussée"].min, dopouStat["Dommages Poussée"].max) * 5;
-                        }
 
 
-                        if (forceStat || agiStat || chanceStat || intelStat) {
-                            if (forceStat) {
-                                e.score += Math.max(forceStat["Force"].min, forceStat["Force"].max);
+                        e.scoreDetails = [];
+
+                        let numOfStats = 0;
+
+                        const addToScore = (statVar, statValueVar, statLabel, statWeight) => {
+                            if (statVar) {
+                                statValueVar = Math.max(statVar[statLabel].min, statVar[statLabel].max);
+                                if (statValueVar > 0) {
+                                    numOfStats++;
+
+                                    e.score += statValueVar * statWeight;
+                                    e.scoreDetails.push({
+                                        amount: statValueVar,
+                                        label: statLabel
+                                    });
+                                }
                             }
+                        };
 
-                            if (agiStat) {
-                                e.score += Math.max(agiStat["Agilité"].min, agiStat["Agilité"].max);
-                            }
+                        addToScore(soinStat, soinStatValue, "Soins", 10);
 
-                            if (chanceStat) {
-                                e.score += Math.max(chanceStat["Chance"].min, chanceStat["Chance"].max);
-                            }
+                        addToScore(sagesseStat, sagesseStatValue, "Sagesse", 3);
 
-                            if (intelStat) {
-                                e.score += Math.max(intelStat["Intelligence"].min, intelStat["Intelligence"].max);
-                            }
-                        }
+                        addToScore(prospecStat, prospecStatValue, "Prospection", 3);
 
-                        if (paStat) {
-                            e.score += Math.max(paStat["PA"].min, paStat["PA"].max) * 100;
-                        }
-                        if (pmStat) {
-                            e.score += Math.max(pmStat["PM"].min, pmStat["PM"].max) * 90;
-                        }
-                        if (poStat) {
-                            e.score += Math.max(poStat["PO"].min, poStat["PO"].max) * 51;
-                        }
-                        if (invoStat) {
-                            e.score += Math.max(paStat["Invocation"].min, paStat["Invocation"].max) * 30;
-                        }
+                        addToScore(dommageStat, dommageStatValue, "Dommages", 10);
 
-                        if (coef) {
+                        addToScore(vitaStat, vitaStatValue, "Vitalité", 0.2);
 
-                            e.score *= coef;
+                        addToScore(dopouStat, dopouStatValue, "Dommages Poussée", 5);
+
+                        addToScore(forceStat, forceStatValue, "Force", 1);
+
+                        addToScore(agiStatValue, agiStatValue, "Agilité", 1);
+
+                        addToScore(chanceStat, chanceStatValue, "Chance", 1);
+
+                        addToScore(intelStat, intelStatValue, "Intelligence", 1);
+
+                        addToScore(paStat, paStatValue, "PA", 100);
+
+                        addToScore(pmStat, pmStatValue, "PM", 90);
+
+                        addToScore(poStat, poStatValue, "PO", 51);
+
+                        addToScore(invoStat, invoStatValue, "Invocation", 30);
+
+
+
+                        e.coef = 1 + ((numOfStats - 1) * 0.5)
+
+                        if (e.coef) {
+
+                            e.score *= e.coef;
                         }
                     }
                 }
@@ -256,6 +268,23 @@ app.controller('AppController', function ($rootScope, $scope, $mdDialog, dofapiS
             console.error(err);
         })
 
+    };
+
+    $scope.displayScoreDetails = (details, coef) => {
+
+        let ret = "";
+
+        if (details) {
+            details.forEach((d) => {
+
+                ret += d.amount + " " + d.label + "\n"
+
+            });
+        }
+
+        ret += "Coef : " + coef;
+
+        return ret;
     };
 
     $scope.makeId = () => {
